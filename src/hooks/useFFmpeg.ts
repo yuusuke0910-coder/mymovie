@@ -16,9 +16,11 @@ export function useFFmpeg() {
   const [error, setError] = useState<string | null>(null)
 
   const loadCore = useCallback(async (useMT: boolean) => {
+    // @ffmpeg/ffmpeg@0.12.15 の内部 worker は `type: "module"` で起動されるため、
+    // importScripts が使えず UMD ビルドは読み込めない。ESM ビルドを使う。
     const baseURL = useMT
-      ? 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/umd'
-      : 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
+      ? 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
+      : 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm'
 
     const coreURL = await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript')
     const wasmURL = await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm')
